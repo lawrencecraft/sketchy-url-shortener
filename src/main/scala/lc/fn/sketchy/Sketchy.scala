@@ -15,7 +15,7 @@ class Sketchy extends SketchyUrlShortenerStack with ScalateSupport {
   val base62 = new Base62
   val files = new java.io.File("words").listFiles
   val rand = new Random
-  var endings = List("mkv", "mp4", "dll", "exe", "so", "out", "kmod", "msi", "msp", "jar", "bat", "cmd", "py", "sh", "vbs", "pdf", "rb")
+  var endings = List("mkv", "mp4", "dll", "exe", "so", "out", "kmod", "msi", "msp", "jar", "bat", "cmd", "py", "sh", "vbs", "pdf", "rb", "jpg.exe", "COM")
   val words: Map[String, List[String]] = {
     def getWordsFromFile(file: java.io.File): List[String] = {
       Source.fromFile(file).getLines
