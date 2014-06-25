@@ -71,7 +71,7 @@ class Sketchy extends SketchyUrlShortenerStack with ScalateSupport {
         short = getUrl(lists, word_count)
       }
     }
-    r.set("sketchy:url:"+short, url)
+    r.set("sketchy:url:" + short, url)
     ssp("/WEB_INF/views/new.jade", "url" -> url, "short" -> ("http://fn.lc/"+short))
   }
   get("/test") {
@@ -89,17 +89,11 @@ class Sketchy extends SketchyUrlShortenerStack with ScalateSupport {
     }
   }
   def getUrl(lists: List[String], count: Int): String = {
-    var parts:List[String] = List()
-    for(v <- 0 to rand.nextInt(count) ) {
-      parts = messCase(randWord(lists)).replaceAll(" ", "_") :: parts
-    }
+    def wordList:List[String] = (0 to rand.nextInt(count)).map(i => messCase(randWord(lists)).replaceAll(" ", "_")).toList
     val num = r.incr("sketchy:latestid")
-    parts = insertAt(base62.encode(num.last), rand.nextInt(parts.length + 1), parts)
-    var url = parts.mkString("_")
-    url += "."+endings(rand.nextInt(endings.length))
-    //url = url.replaceAll(" ", "_")//.toLowerCase
-    //url = url.flatMap { case ' ' => "_-.".charAt(rand.nextInt(3)).toString case c => c.toString }
-    url
+    val parts = insertAt(base62.encode(num.last), rand.nextInt(wordList.length + 1), wordList)
+    val url = parts.mkString("_")
+    url + "." + endings(rand.nextInt(endings.length))
   }
   def insertAt[A](e: A, n: Int, ls: List[A]): List[A] = {
     val(pre, post) = ls.splitAt(n)
