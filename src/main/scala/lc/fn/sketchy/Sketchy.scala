@@ -29,14 +29,17 @@ class Sketchy extends SketchyUrlShortenerStack with ScalateSupport {
 
   get("/:url") {
     val url = params("url")
-    var to = r.get("sketchy:url:"+url)
+    val to = r.get("sketchy:url:"+url)
+    def formatUrl(url: String) = {
+      def uri = parse(url)
+      uri.protocol match {
+        case Some => url
+        case None => "http://" + url
+      }
+    }
     to match {
       case Some(s) => {
-        val uri = parse(s)
-        if(uri.protocol == None){
-          to = Some("http://"+s)
-        }
-        halt(status = 301, headers = Map("Location" -> s))
+        halt(status = 301, headers = Map("Location" -> formatUrl(s)))
       }
       case None => halt(404, <h1>Url Not Found</h1>)
     }
@@ -78,7 +81,7 @@ class Sketchy extends SketchyUrlShortenerStack with ScalateSupport {
     getUrl(words.keys.toList, 8)
   }
   def randWord(lists: List[String]): String = {
-    val tmp_words = lists.flatMap(words(_))//(for ( list <- lists ) yield words(list)).flatten
+    val tmp_words = lists.flatMap(words(_)).toArray
     tmp_words(rand.nextInt(tmp_words.length))
   }
   def messCase(word: String): String = {
